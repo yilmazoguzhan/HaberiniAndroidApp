@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp"
+    android:background="#ffffff">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TVNewDate"
+        android:text="Haberin Tarihi"
+        android:textSize="15dp"
+        android:textColor="#e7505a" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TVNewHead"
+        android:text="Haberin Başlığı"
+        android:textSize="20dp"
+        android:textColor="#34495e" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TVNewImage" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/TVNewDescription"
+        android:text="Haberin Açıklaması"
+        android:textSize="16dp"
+        android:textColor="#333333" />
+</LinearLayout>
