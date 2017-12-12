@@ -18,6 +18,5 @@
         android:layout_height="match_parent"
         android:id="@+id/ListViewNews"
         android:dividerHeight="10dp"
-        android:divider="#d1d1d1"
-        android:paddingLeft="10dp"></ListView>
+        android:divider="#d1d1d1" />
 </LinearLayout>

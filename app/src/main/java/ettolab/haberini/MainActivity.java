@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.Xml;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -20,9 +21,14 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
 
@@ -40,20 +46,24 @@ public class MainActivity extends Activity {
   
 
         List<String> titleList;
-        List<String> linkList;
+        List<String> dateList;
+        List<String> imageLinkList;
+        List<String> descriptionList;
 
         // rss başlıklarını tutacak list
         titleList = new ArrayList<String>();
         // rss linklerini tutacak list
-        linkList = new ArrayList<String>();
+        dateList = new ArrayList<String>();
+        imageLinkList = new ArrayList<String>();
+        descriptionList = new ArrayList<String>();
 
         try {
             // rss url'imiz
-            InputStream stream = new URL("https://www.ahaber.com.tr/rss/magazin.xml").openConnection().getInputStream();
+            InputStream stream = new URL("https://www.cnnturk.com/feed/rss/news").openConnection().getInputStream();
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(false);
             XmlPullParser parser = factory.newPullParser();
-            parser.setInput(stream,null);
+            parser.setInput(stream,"utf-8");
             boolean insideItem = false;
 
 
@@ -65,10 +75,17 @@ public class MainActivity extends Activity {
                     } else if (parser.getName().equalsIgnoreCase("title")) {
                         if (insideItem)
                             titleList.add(parser.nextText());
-                    } else if (parser.getName().equalsIgnoreCase("link")) {
+                    } else if (parser.getName().equalsIgnoreCase("pubDate")) {
                         if (insideItem)
-                            linkList.add(parser.nextText());
+                            dateList.add(parser.nextText());
+                    }else if (parser.getName().equalsIgnoreCase("image")) {
+                        if (insideItem)
+                            imageLinkList.add(parser.nextText());
+                    }else if (parser.getName().equalsIgnoreCase("description")) {
+                        if (insideItem)
+                            descriptionList.add(parser.nextText());
                     }
+
                 } else if (eventType == XmlPullParser.END_TAG &&
                         parser.getName().equalsIgnoreCase("item")) {
                     insideItem = false;
@@ -85,9 +102,25 @@ public class MainActivity extends Activity {
 
         lVNews = (ListView)findViewById(R.id.ListViewNews);
         mNewsList = new ArrayList<>();
-        for (String title: titleList) {
-            mNewsList.add(new News(1,"11 Ekim Perşembe",title,getBitmapFromURL("http://i.hurimg.com/i/hurriyet/75/590x332/594a541ac9de3d0fb0de00fb.jpg") , "TEST İÇERİK"));
+
+        for (int art = 0; art < imageLinkList.size(); art++)
+        {
+            try {
+                String string = dateList.get(art);
+                DateFormat format = new SimpleDateFormat("EEE, d LLL yyyy HH:mm:ss z", Locale.ENGLISH);
+                Date date = format.parse(string);
+
+                SimpleDateFormat dt1 = new SimpleDateFormat("dd MMM E - HH:mm:ss");
+
+                mNewsList.add(new News(1,dt1.format(date),titleList.get(art).replace("&#39;", "'").replace("&quot;", "'"),getBitmapFromURL(imageLinkList.get(art)) , descriptionList.get(art).replace("&#39;", "'").replace("&quot;", "'")));
+            }
+            catch (ParseException ex)
+            {
+                mNewsList.add(new News(1, dateList.get(art),titleList.get(art).replace("&#39;", "'").replace("&quot;", "'"),getBitmapFromURL(imageLinkList.get(art)) , descriptionList.get(art).replace("&#39;", "'").replace("&quot;", "'")));
+            }
+
         }
+
         adapter = new NewsListAdapter(getApplicationContext(),mNewsList);
         lVNews.setAdapter(adapter);
 
